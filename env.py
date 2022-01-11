@@ -2,9 +2,9 @@ from panda_bullet import Panda
 import numpy as np
 
 class Env():
-    def __init__(self):
+    def __init__(self, render=False):
         self.step_size = 1e-3
-        self.robot = Panda(self.step_size)
+        self.robot = Panda(self.step_size, render=render)
         self.robot.setControlMode("torque")
         self.action_size = self.robot.dof
     
@@ -17,7 +17,7 @@ class Env():
         return self.robot.get_state()
 
     def get_Reward(self, old_dist, new_dist):
-        return 0.5*(old_dist - new_dist)
+        return -0.5*old_dist
     
     def is_Done(self, new_dist):
         return new_dist < 0.1
@@ -39,15 +39,14 @@ class Env():
 
         return new_state, reward, done
     
-    def episode_reset(self):
-        # the target needs to change position
-        #robot angle random start?
-        reset_pos=[]
-        for i in range(self.robot.dof):
-            reset_pos.append(np.random.uniform(self.robot.q_min[i],self.robot.q_max[i]))
-        
-        #reset robot pos
-        self.robot.reset(reset_pos)
+    def episode_reset(self, infer=False):
+        if infer:
+            self.robot.reset()
+        else:
+            reset_pos=[]
+            for i in range(self.robot.dof):
+                reset_pos.append(np.random.uniform(self.robot.q_min[i],self.robot.q_max[i]))
+            self.robot.reset(reset_pos)
         #reset target pos
         while True:
             x= np.random.uniform(0.0,1.0)

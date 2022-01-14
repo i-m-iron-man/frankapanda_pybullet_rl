@@ -1,4 +1,4 @@
-from panda_bullet import Panda
+from panda_bullet_many_clients import Panda
 import numpy as np
 
 class Env():
@@ -36,6 +36,8 @@ class Env():
         reward = self.get_Reward(old_dist,new_dist)
 
         done = self.is_Done(new_dist)
+        if done:
+            reward += 500
 
         return new_state, reward, done
     
@@ -57,3 +59,6 @@ class Env():
                 break
         self.robot.set_target_pos(pos=target_pos)
         return self.get_State()
+    
+    def end(self):
+        self.robot.end()

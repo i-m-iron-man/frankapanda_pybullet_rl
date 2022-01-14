@@ -103,12 +103,12 @@ class Actor(nn.Module):
 		
 '''
 class Critic(nn.Module):
-    def __init__(self, nb_states, nb_actions, hidden1=32, hidden2=400, hidden3=300, init_w=3e-3):
+    def __init__(self, nb_states, nb_actions, hidden1=64, hidden2=1024, hidden3=512, hidden4=256, init_w=3e-3):
         super(Critic, self).__init__()
         self.fc1 = nn.Linear(nb_states, hidden1)
         self.fc2 = nn.Linear(hidden1+nb_actions, hidden2)
         self.fc3 = nn.Linear(hidden2, hidden3)
-        #self.fc4 = nn.Linear(hidden3, hidden4)
+        self.fc4 = nn.Linear(hidden3, hidden4)
         self.fc5 = nn.Linear(hidden3, 1)
         self.relu = nn.ReLU()
         self.init_weights(init_w)
@@ -117,7 +117,7 @@ class Critic(nn.Module):
         self.fc1.weight.data = fanin_init(self.fc1.weight.data.size())
         self.fc2.weight.data = fanin_init(self.fc2.weight.data.size())
         self.fc3.weight.data = fanin_init(self.fc3.weight.data.size())
-        #self.fc4.weight.data = fanin_init(self.fc4.weight.data.size())
+        self.fc4.weight.data = fanin_init(self.fc4.weight.data.size())
         self.fc5.weight.data.uniform_(-init_w, init_w)
     
     def forward(self, state, action):
@@ -127,14 +127,14 @@ class Critic(nn.Module):
         out = self.fc2(torch.cat([out,action],1))
         out = self.relu(out)
         out = self.fc3(out)
-        #out = self.relu(out)
-        #out = self.fc4(out)
+        out = self.relu(out)
+        out = self.fc4(out)
         out = self.relu(out)
         out = self.fc5(out)
         return out
 
 class Actor(nn.Module):
-    def __init__(self, nb_states, nb_actions, action_lim, hidden1=512, hidden2=256, hidden3=128, init_w=3e-3):
+    def __init__(self, nb_states, nb_actions, action_lim, hidden1=1024, hidden2=512, hidden3=256, init_w=3e-3):
         super(Actor, self).__init__()
         self.fc1 = nn.Linear(nb_states, hidden1)
         self.fc2 = nn.Linear(hidden1, hidden2)

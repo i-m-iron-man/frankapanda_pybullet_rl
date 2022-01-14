@@ -24,7 +24,7 @@ action_lim = 10.0
 ram = buffer.MemoryBuffer(MAX_BUFFER)
 trainer = train.Trainer(state_size, action_size, action_lim, ram)
 
-trainer.load_models(5)
+trainer.load_models(1)
 total_reward=0.0
 state =np.float32(state)
 
@@ -38,5 +38,3 @@ for step in range(MAX_timestep):
 
 gc.collect()
 print("total reward: ",total_reward)
-
-
